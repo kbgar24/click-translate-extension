@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
       input.name = 'url';
       input.value = tab.url;
 
-      form.appendChild(i);
-      document.body.appendChild(f);
+      form.appendChild(input);
+      document.body.appendChild(form);
+
       form.submit();
     });
   }, false);
