@@ -1,2 +1,2 @@
-# gtmetrix-extension
-My first Chrome Extension - Allows users to check the speed of their websites, as measured by GTmetrix
+# quick-language
+My first Chrome Extension - Allows users to double click on a word and see it's translation
