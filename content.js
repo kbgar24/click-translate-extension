@@ -5,7 +5,7 @@ document.body.ondblclick = () => {
   const selection = window.getSelection().toString();
   console.log('selection: ', selection);
   if (selection) {
-    chrome.runtime.sendMessage({todo: 'logSelection', message: selection});
+    chrome.runtime.sendMessage({todo: 'translateText', text: selection});
   }
 };
 

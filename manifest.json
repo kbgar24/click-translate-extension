@@ -14,7 +14,7 @@
       "default_popup": "popup.html"
   },
   "background": {
-    "scripts": ["eventPage.js"],
+    "scripts": ["jquery-3.2.1.min.js", "eventPage.js"],
     "persistent": false
   },
   "content_scripts": [

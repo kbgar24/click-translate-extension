@@ -21,7 +21,17 @@ chrome.contextMenus.onClicked.addListener((clickData) => {
 
 // Add Listener for Selection from Content.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.todo === 'logSelection'){
-    console.log('Selection from DOM: ', request.message);
+  if (request.todo === 'translateText'){
+    console.log('Selection from DOM: ', request.text);
+    $.ajax({
+      method: 'POST',
+      url: 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyB7afMBsYGvO-3ShkOOSDmi8zKW01hV_ls',
+      data: {
+        q: request.text,
+        target: 'de'
+      }
+    }).done((msg) => {
+      console.log(msg);
+    });
   }
 });
