@@ -8,12 +8,12 @@
     "48": "icon48.png",
     "16": "icon16.png"
   },
-  "browser_action": [
-    {
+  "browser_action": {
       "default_icon": "icon16.png",
       "default_title": "ClickTranslate",
       "default_popup": "popup.html"
-    }
-  ],
-  "permissions": []
+  },
+  "permissions": [
+    "contextMenus"
+  ]
 }
