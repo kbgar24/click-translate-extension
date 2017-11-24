@@ -5,16 +5,20 @@ const menuItem = {
   contexts: ['selection']
 };
 
+function sendMessageToContentScript(todo, message){
+  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    console.log('tabs', tabs);
+    chrome.tabs.sendMessage(tabs[0].id, {todo, message});
+  });
+}
+
 // Create new menu item
 chrome.contextMenus.create(menuItem);
 
 // Add click handler to menu item
 chrome.contextMenus.onClicked.addListener((clickData) => {
   if (clickData.menuItemId === 'clickTranslate' && clickData.selectionText){
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      console.log('tabs', tabs);
-      chrome.tabs.sendMessage(tabs[0].id, {todo: 'consoleLog', message: clickData.selectionText});
-    });
+    sendMessageToContentScript('consoleLog', clickData.selectionText);
     console.log('message sent!', clickData.selectionText);
   }
 })
@@ -30,8 +34,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         q: request.text,
         target: 'de'
       }
-    }).done((msg) => {
-      console.log(msg);
+    }).done((res) => {
+      console.log(res);
+      const translatedText = res.data.translations[0].translatedText;
+      sendMessageToContentScript('translatedText', translatedText);
     });
   }
 });

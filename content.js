@@ -12,5 +12,7 @@ document.body.ondblclick = () => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.todo === 'consoleLog'){
     console.log('Background Page message: ', request.message);
+  } else if (request.todo === 'translatedText'){
+    console.log('Translated Text: ', request.message);
   }
 });
