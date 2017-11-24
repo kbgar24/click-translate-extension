@@ -32,8 +32,9 @@ chrome.contextMenus.create(menuItem);
 // Add click handler to menu item
 chrome.contextMenus.onClicked.addListener((clickData) => {
   if (clickData.menuItemId === 'clickTranslate' && clickData.selectionText){
-    sendMessageToContentScript('consoleLog', clickData.selectionText);
-    console.log('message sent!', clickData.selectionText);
+    translateViaGoogle(clickData.selectionText, 'de').then((translation) => {
+      sendMessageToContentScript('translatedText', translation);
+    });
   }
 })
 
