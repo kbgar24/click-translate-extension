@@ -12,6 +12,20 @@ function sendMessageToContentScript(todo, message){
   });
 }
 
+function translateViaGoogle(text, language) {
+  return $.ajax({
+    method: 'POST',
+    url: 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyB7afMBsYGvO-3ShkOOSDmi8zKW01hV_ls',
+    data: {
+      q: text,
+      target: language
+    }
+  }).then((res) => {
+    const translatedText = res.data.translations[0].translatedText;
+    return res.data.translations[0].translatedText;
+  });
+};
+
 // Create new menu item
 chrome.contextMenus.create(menuItem);
 
@@ -27,17 +41,8 @@ chrome.contextMenus.onClicked.addListener((clickData) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.todo === 'translateText'){
     console.log('Selection from DOM: ', request.text);
-    $.ajax({
-      method: 'POST',
-      url: 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyB7afMBsYGvO-3ShkOOSDmi8zKW01hV_ls',
-      data: {
-        q: request.text,
-        target: 'de'
-      }
-    }).done((res) => {
-      console.log(res);
-      const translatedText = res.data.translations[0].translatedText;
-      sendMessageToContentScript('translatedText', translatedText);
+    translateViaGoogle(request.text, 'de').then((translation) => {
+        sendMessageToContentScript('translatedText', translation);
     });
   }
 });
