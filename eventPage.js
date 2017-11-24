@@ -8,7 +8,7 @@ let sourceLang = 'en-US';
 let rate = 1.0;
 
 // Set default gender of 'Pronounce' voice
-let gender = 'male';
+let gender = 'female';
 
 // Build menu for Chrome Context Menu
 const menuItem = {
@@ -41,7 +41,7 @@ chrome.contextMenus.onClicked.addListener((clickData) => {
   const id = clickData.menuItemId;
   const selection = clickData.selectionText;
 
-  if (id === 'clickTranslate' && selection){
+  if (id === 'clickTranslate'){
     translateViaGoogle(selection).then((translation) => {
       sendMessageToContentScript('translatedText', translation);
     });
@@ -49,11 +49,14 @@ chrome.contextMenus.onClicked.addListener((clickData) => {
     chrome.tts.isSpeaking((status) => {
       if (status){
         chrome.tts.stop();
+        chrome.contextMenus.update('clickTranslate-pronounce',{
+          title: 'Pronounce Selection'
+        });
       } else {
         pronounceViaGoogle(selection);
       }
     });
-  } else if (id === 'clickTranslate-translate' && selection) {
+  } else if (id === 'clickTranslate-translate') {
     translateViaGoogle(selection).then((translation) => {
       sendMessageToContentScript('translatedText', translation);
     });
@@ -99,7 +102,6 @@ function pronounceViaGoogle(text){
     rate,
     gender,
     onEvent: (event) => {
-      console.log('event received!', event);
       if (event.type === 'start'){
         chrome.contextMenus.update('clickTranslate-pronounce', {
           title: 'Stop Pronounciation',
