@@ -3,8 +3,7 @@ let selection = $('#languageSelect').val();
 console.log(selection);
 
 $('#languageSelect').on('change', () => {
-  newLanguage = $('#languageSelect').val();
-  updateLanguage(newLanguage);
+  updateLanguage($('#languageSelect').val());
 });
 
 function updateLanguage(languageCode){

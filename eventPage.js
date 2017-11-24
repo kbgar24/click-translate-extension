@@ -2,13 +2,13 @@
 let lang = 'de';
 
 // Set the default source language
-let sourceLang = 'en'
+let sourceLang = 'en-US';
 
 // Set default speaking rate of 'Pronounce' feature
 let rate = 1.0;
 
 // Set default gender of 'Pronounce' voice
-let gender = 'male'
+let gender = 'male';
 
 // Build menu for Chrome Context Menu
 const menuItem = {
@@ -40,12 +40,19 @@ chrome.contextMenus.create(subMenuItemTranslate);
 chrome.contextMenus.onClicked.addListener((clickData) => {
   const id = clickData.menuItemId;
   const selection = clickData.selectionText;
+
   if (id === 'clickTranslate' && selection){
     translateViaGoogle(selection).then((translation) => {
       sendMessageToContentScript('translatedText', translation);
     });
-  } else if (id === 'clickTranslate-pronounce' && selection){
-    pronounceViaGoogle(selection);
+  } else if (id === 'clickTranslate-pronounce'){
+    chrome.tts.isSpeaking((status) => {
+      if (status){
+        chrome.tts.stop();
+      } else {
+        pronounceViaGoogle(selection);
+      }
+    });
   } else if (id === 'clickTranslate-translate' && selection) {
     translateViaGoogle(selection).then((translation) => {
       sendMessageToContentScript('translatedText', translation);
@@ -57,12 +64,12 @@ chrome.contextMenus.onClicked.addListener((clickData) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.todo === 'translateText'){
     console.log('Selection from DOM: ', request.text);
-    translateViaGoogle(request.text, currentLanguage).then((translation) => {
+    translateViaGoogle(request.text).then((translation) => {
         sendMessageToContentScript('translatedText', translation);
     });
   } else if (request.todo === 'updateLanguage'){
     console.log('updateLanguage request received!');
-    currentLanguage = request.message;
+    lang = request.message;
   }
 });
 
@@ -90,7 +97,19 @@ function pronounceViaGoogle(text){
   chrome.tts.speak(text, {
     lang,
     rate,
-    gender
+    gender,
+    onEvent: (event) => {
+      console.log('event received!', event);
+      if (event.type === 'start'){
+        chrome.contextMenus.update('clickTranslate-pronounce', {
+          title: 'Stop Pronounciation',
+        });
+      } else if (event.type === 'end') {
+        chrome.contextMenus.update('clickTranslate-pronounce',{
+          title: 'Pronounce Selection'
+        });
+      }
+    }
   }, () => {
     if (chrome.runtime.lastError){
       console.error(chrome.runtime.lastError.message);
