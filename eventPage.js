@@ -1,5 +1,14 @@
-// Set default currentLanguage
-let currentLanguage = 'de';
+// Set default target language
+let lang = 'de';
+
+// Set the default source language
+let sourceLang = 'en'
+
+// Set default speaking rate of 'Pronounce' feature
+let rate = 1.0;
+
+// Set default gender of 'Pronounce' voice
+let gender = 'male'
 
 // Build menu for Chrome Context Menu
 const menuItem = {
@@ -29,8 +38,16 @@ chrome.contextMenus.create(subMenuItemTranslate);
 
 // Add click handler to menu item
 chrome.contextMenus.onClicked.addListener((clickData) => {
-  if (clickData.menuItemId === 'clickTranslate' && clickData.selectionText){
-    translateViaGoogle(clickData.selectionText, currentLanguage).then((translation) => {
+  const id = clickData.menuItemId;
+  const selection = clickData.selectionText;
+  if (id === 'clickTranslate' && selection){
+    translateViaGoogle(selection).then((translation) => {
+      sendMessageToContentScript('translatedText', translation);
+    });
+  } else if (id === 'clickTranslate-pronounce' && selection){
+    pronounceViaGoogle(selection);
+  } else if (id === 'clickTranslate-translate' && selection) {
+    translateViaGoogle(selection).then((translation) => {
       sendMessageToContentScript('translatedText', translation);
     });
   }
@@ -56,16 +73,27 @@ function sendMessageToContentScript(todo, message){
   });
 }
 
-function translateViaGoogle(text, language) {
+function translateViaGoogle(text) {
   return $.ajax({
     method: 'POST',
     url: 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyB7afMBsYGvO-3ShkOOSDmi8zKW01hV_ls',
     data: {
       q: text,
-      target: language
+      target: lang
     }
   }).then((res) => {
-    const translatedText = res.data.translations[0].translatedText;
     return res.data.translations[0].translatedText;
   });
 };
+
+function pronounceViaGoogle(text){
+  chrome.tts.speak(text, {
+    lang,
+    rate,
+    gender
+  }, () => {
+    if (chrome.runtime.lastError){
+      console.error(chrome.runtime.lastError.message);
+    }
+  });
+}
