@@ -13,6 +13,10 @@
       "default_title": "ClickTranslate",
       "default_popup": "popup.html"
   },
+  "background": {
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  },
   "permissions": [
     "contextMenus"
   ]
