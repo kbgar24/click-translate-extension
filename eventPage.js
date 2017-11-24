@@ -5,6 +5,8 @@ const menuItem = {
   contexts: ['selection']
 };
 
+let currentLanguage = 'de';
+
 function sendMessageToContentScript(todo, message){
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     console.log('tabs', tabs);
@@ -32,7 +34,7 @@ chrome.contextMenus.create(menuItem);
 // Add click handler to menu item
 chrome.contextMenus.onClicked.addListener((clickData) => {
   if (clickData.menuItemId === 'clickTranslate' && clickData.selectionText){
-    translateViaGoogle(clickData.selectionText, 'de').then((translation) => {
+    translateViaGoogle(clickData.selectionText, currentLanguge).then((translation) => {
       sendMessageToContentScript('translatedText', translation);
     });
   }
@@ -42,8 +44,11 @@ chrome.contextMenus.onClicked.addListener((clickData) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.todo === 'translateText'){
     console.log('Selection from DOM: ', request.text);
-    translateViaGoogle(request.text, 'de').then((translation) => {
+    translateViaGoogle(request.text, currentLanguage).then((translation) => {
         sendMessageToContentScript('translatedText', translation);
     });
+  } else if (request.todo === 'updateLanguage'){
+    console.log('updateLanguage request received!');
+    currentLanguage = request.message;
   }
 });
