@@ -1,16 +1,19 @@
 {
   "manifest_version": 2,
-
-  "name": "Quick Language Lookup",
-  "description": "This extension allows the user to see a translation of a word they click on",
+  "name": "ClickTranslate",
   "version": "1.0",
-
-  "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html"
+  "description": "Click on any text to see it's translation!",
+  "icon": {
+    "128": "icon128.png",
+    "48": "icon48.png",
+    "16": "icon16.png"
   },
-  "permissions": [
-    "activeTab",
-    "storage"
-  ]
+  "browser_action": [
+    {
+      "default_icon": "icon16.png",
+      "default_title": "ClickTranslate",
+      "default_popup": "popup.html"
+    }
+  ],
+  "permissions": []
 }
